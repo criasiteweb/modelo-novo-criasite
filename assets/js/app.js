@@ -195,9 +195,15 @@ function abrirCarrinho(){
       <button data-remove="${i}" aria-label="Remover">✕</button>
     </div>`).join("");
   const tot=carrinho.reduce((s,i)=>s+i.preco,0);
+  const meta=LOJA.freteGratis||0;
+  const falta=Math.max(0,meta-tot);
+  const pct=meta?Math.min(100,tot/meta*100):0;
+  const frete = meta ? (falta>0
+    ? `<div class="frete"><div class="frete-txt">Faltam <b>${reais(falta)}</b> para <b>frete grátis</b></div><div class="frete-bar"><i style="width:${pct}%"></i></div></div>`
+    : `<div class="frete frete--ok">Você ganhou <b>frete grátis</b></div>`) : "";
   cdlg.innerHTML=`
     <button class="dlg-x" data-fechar aria-label="Fechar">✕</button>
-    <div class="dlg-corpo"><h3>Seu pedido</h3>${linhas}
+    <div class="dlg-corpo"><h3>Seu pedido</h3>${frete}${linhas}
       <div class="c-total"><span>Total</span><b>${reais(tot)}</b></div></div>
     <div class="dlg-rod"><button class="btn-add full" data-enviar>Enviar pelo WhatsApp</button></div>`;
   $("[data-fechar]",cdlg).onclick=()=>cdlg.close();
@@ -216,4 +222,38 @@ function enviarWhats(){
   }).join("%0A");
   const tot=carrinho.reduce((s,i)=>s+i.preco,0);
   window.open(`https://wa.me/${LOJA.whatsapp}?text=${`Olá! Quero pedir:%0A${linhas}%0A%0ATotal: ${reais(tot)}`}`,"_blank");
+}
+
+/* ---------- VIDA E INTERAÇÃO ---------- */
+// barra de progresso de rolagem
+const barProg=document.querySelector("[data-prog]");
+addEventListener("scroll",()=>{
+  const h=document.documentElement;
+  const p=h.scrollTop/(h.scrollHeight-h.clientHeight)*100;
+  if(barProg) barProg.style.width=p+"%";
+},{passive:true});
+// botão "Ver cardápio" rola até o cardápio
+document.querySelector("[data-cta]")?.addEventListener("click",()=>{
+  document.querySelector("[data-main] section")?.scrollIntoView({behavior:"smooth",block:"start"});
+});
+// pulo do carrinho sempre que algo é adicionado
+const _render=renderBar;
+renderBar=function(){
+  _render();
+  const bar=document.querySelector("[data-bar]");
+  if(bar&&bar.classList.contains("on")){bar.classList.remove("pulo");void bar.offsetWidth;bar.classList.add("pulo");}
+};
+
+/* ---------- MASCOTE ---------- */
+const masc=document.querySelector("[data-mascote]");
+const balao=document.querySelector("[data-balao]");
+if(masc){
+  const frases=["Bora pedir?","Tá com fome?","Hoje tem campeão","Monta seu combo"];
+  let fi=0;
+  const mostrar=()=>{masc.classList.add("mostrar");setTimeout(()=>masc.classList.remove("mostrar"),3200);};
+  setTimeout(mostrar,2500);
+  setInterval(()=>{fi=(fi+1)%frases.length;if(balao)balao.textContent=frases[fi];mostrar();},12000);
+  masc.addEventListener("click",()=>{
+    document.querySelector("[data-main] section")?.scrollIntoView({behavior:"smooth",block:"start"});
+  });
 }

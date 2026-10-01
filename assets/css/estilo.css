@@ -132,7 +132,86 @@ dialog::backdrop{background:rgba(0,0,0,.55);backdrop-filter:blur(2px)}
 .c-total{display:flex;justify-content:space-between;font-size:1.1rem;padding-top:.9rem;margin-top:.3rem}
 
 /* capa com foto real: um pouco mais alta e gradiente mais rico */
-.capa{min-height:52vh;background:
-  linear-gradient(180deg,rgba(0,0,0,.05) 0%,rgba(0,0,0,.35) 45%,rgba(0,0,0,.82) 100%),
-  url("../img/capa.jpg") center/cover}
+.capa{min-height:54vh}
 .dlg-img--foto{background-size:cover;background-position:center;font-size:0}
+
+/* ===================== VIDA E MOVIMENTO ===================== */
+/* barra de progresso de rolagem no topo */
+.progresso{position:fixed;top:0;left:0;height:3px;width:0;z-index:70;
+  background:linear-gradient(90deg,var(--marca),var(--marca-2));transition:width .1s linear}
+
+/* capa: zoom lento (Ken Burns) + entrada do texto */
+.capa{overflow:hidden;background:#0a0a0a;position:relative}
+.capa__real{position:absolute;inset:0;z-index:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.35) 45%,rgba(0,0,0,.85)),
+  url("../img/capa.jpg") center/cover;animation:kenburns 20s ease-in-out infinite alternate}
+.capa__in{position:relative;z-index:1}
+.capa .logo-circ{z-index:2}
+@keyframes kenburns{from{transform:scale(1)}to{transform:scale(1.12)}}
+.capa__in>*{opacity:0;transform:translateY(16px);animation:subir .7s cubic-bezier(.2,.7,.2,1) forwards}
+.capa .selo-aberto{animation-delay:.05s}
+.capa h1{animation-delay:.18s}
+.capa__sub{animation-delay:.32s}
+.capa__cta{animation-delay:.46s}
+@keyframes subir{to{opacity:1;transform:none}}
+
+/* botão grande de ação na capa */
+.capa__cta{display:inline-flex;align-items:center;gap:.6rem;margin-top:1.1rem;
+  background:var(--marca);color:#fff;font-weight:700;font-size:1.05rem;
+  padding:.9rem 1.6rem;border-radius:40px;box-shadow:0 10px 30px -8px rgba(230,48,34,.6);
+  transition:transform .15s,box-shadow .15s}
+.capa__cta:active{transform:scale(.96)}
+
+/* cartões: entrada suave só uma vez, sem esconder texto por muito tempo */
+@media (prefers-reduced-motion:no-preference){
+  .card{animation:cardIn .5s both}
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.add{transition:transform .15s}
+.card:active .add{transform:scale(.85)}
+
+/* carrinho: pulo quando entra item */
+.carrinho-bar.pulo{animation:pulo .4s}
+@keyframes pulo{0%,100%{transform:translateX(-50%) translateY(0)}
+  30%{transform:translateX(-50%) translateY(-8px) scale(1.03)}}
+
+/* janelas: deslizar de baixo */
+dialog[open]{animation:dlgIn .28s cubic-bezier(.2,.7,.2,1)}
+@keyframes dlgIn{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+dialog::backdrop{animation:fadeIn .25s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* pílula de categoria: brilho ao ativar */
+.cats button{transition:all .2s}
+.cats button.on{box-shadow:0 6px 16px -6px rgba(230,48,34,.7);transform:translateY(-1px)}
+
+/* ===================== MASCOTE ===================== */
+.mascote{position:fixed;right:1rem;bottom:calc(5.2rem + env(safe-area-inset-bottom));z-index:55;
+  filter:drop-shadow(0 8px 16px rgba(0,0,0,.28));background:none}
+.mascote__svg{display:block}
+.mascote__corpo{transform-origin:60px 110px;animation:flutua 3s ease-in-out infinite}
+@keyframes flutua{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-7px) rotate(1.5deg)}}
+.mascote__braco{transform-origin:100px 60px;animation:acena 3s ease-in-out infinite}
+@keyframes acena{0%,70%,100%{transform:rotate(0)}80%{transform:rotate(-22deg)}90%{transform:rotate(-8deg)}}
+.mascote__olhos .pupila{animation:pisca 4s infinite}
+@keyframes pisca{0%,92%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+.mascote .pupila{transform-box:fill-box;transform-origin:center}
+.mascote:active .mascote__corpo{animation:pulinho .4s}
+@keyframes pulinho{0%,100%{transform:translateY(0)}40%{transform:translateY(-16px) scale(1.05)}}
+/* balão de fala */
+.mascote__balao{position:absolute;right:92px;top:16px;white-space:nowrap;
+  background:var(--cartao);color:var(--tinta);font-weight:600;font-size:.86rem;
+  padding:.45rem .8rem;border-radius:14px;box-shadow:var(--sombra);
+  opacity:0;transform:translateX(8px);transition:all .3s;pointer-events:none}
+.mascote__balao::after{content:"";position:absolute;right:-6px;top:50%;margin-top:-5px;
+  border:5px solid transparent;border-left-color:var(--cartao)}
+.mascote.mostrar .mascote__balao{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.mascote__corpo,.mascote__braco,.pupila{animation:none}}
+
+/* barra de frete grátis (marketing) */
+.frete{background:var(--creme);border-radius:var(--raio-sm);padding:.7rem .9rem;margin:.2rem 0 1rem}
+.frete-txt{font-size:.9rem;margin-bottom:.5rem}
+.frete-bar{height:8px;background:color-mix(in srgb,var(--marca) 18%,transparent);border-radius:20px;overflow:hidden}
+.frete-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--marca),var(--marca-2));
+  border-radius:20px;transition:width .5s cubic-bezier(.2,.7,.2,1)}
+.frete--ok{color:var(--ok);font-weight:600;background:color-mix(in srgb,var(--ok) 12%,transparent)}

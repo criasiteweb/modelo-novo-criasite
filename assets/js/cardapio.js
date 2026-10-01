@@ -6,6 +6,7 @@ export const LOJA = {
   frase:"Hambúrguer artesanal na brasa. Pão fresco, blend 160g, entrega rápida.",
   whatsapp:"5511994516869",          // WhatsApp da Cria Site nos modelos
   abre:"18:00", fecha:"23:40",
+  freteGratis:60.00,   // acima disso, entrega grátis (alavanca de marketing)
 };
 export const CATEGORIAS = [
   {id:"top",   nome:"Mais vendidos", emoji:"🔥"},
